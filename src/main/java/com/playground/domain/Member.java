@@ -1,5 +1,7 @@
 package com.playground.domain;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,13 +18,16 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Document
-public class User {
+public class Member {
     
     @Id
-    private Long userId;
-    private String name;
+    private String id;
+    @Indexed(unique = true)
+    private String memberUUID;
     @Indexed(unique = true)
     private String email;
+    private String fullName;
     private String password;
+    private LocalDateTime creationDate;
     private boolean deleted;
 }
