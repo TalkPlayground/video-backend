@@ -18,6 +18,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.playground.domain.Member;
@@ -32,6 +34,8 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 	@Autowired MemberRepository memberRepository;
 	@Autowired AuthenticationManager authenticationManager;
 	@Autowired JwtTokenUtil jwtTokenUtil;
+	
+	private static final PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
 	@Override
 	public Object login(LoginDTO payload) {
@@ -50,7 +54,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 		member.setFullName(payload.getFullName());
 		member.setEmail(payload.getEmail());
 		member.setRoles(List.of("ROLE_USER"));
-		member.setPassword(payload.getPassword());
+		member.setPassword(encoder.encode(payload.getPassword()));
 		member.setCreationDate(LocalDateTime.now());
 		member.setDeleted(false);
 		memberRepository.save(member);

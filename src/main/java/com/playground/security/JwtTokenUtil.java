@@ -30,7 +30,7 @@ public class JwtTokenUtil{
 	public String generateToken(Member user) {
 		String tokenId = UUID.randomUUID().toString();
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("roles", user.getRoles());
+		//claims.put("roles", user.getRoles());
 		claims.put("name", user.getFullName());
 		claims.put("userId", user.getMemberUUID());
 		return Jwts.builder().setSubject(user.getEmail())
@@ -38,11 +38,7 @@ public class JwtTokenUtil{
 				.setExpiration(new Date(System.currentTimeMillis() + convertHourToMillis(jwtTokenValidity))).compact();
 	}
 	
-	public String generateRememberMeToken(Member user) {
-		return Jwts.builder().setSubject(user.getEmail()).signWith(SignatureAlgorithm.HS256, jwtSecretKey.getBytes())
-				.setExpiration(new Date(System.currentTimeMillis() + convertHourToMillis(120L))).compact();
-	}
-
+	
 	public boolean validateToken(String token) {
 		return isValidSignedToken(token) && !isTokenExpired(token);
 	}
