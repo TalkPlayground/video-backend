@@ -2,7 +2,6 @@ package com.playground.security;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -28,13 +27,12 @@ public class JwtTokenUtil{
 	}
 
 	public String generateToken(Member user) {
-		String tokenId = UUID.randomUUID().toString();
 		Map<String, Object> claims = new HashMap<>();
 		//claims.put("roles", user.getRoles());
 		claims.put("name", user.getFullName());
 		claims.put("userId", user.getMemberUUID());
 		return Jwts.builder().setSubject(user.getEmail())
-				.addClaims(claims).setId(tokenId).signWith(SignatureAlgorithm.HS256, jwtSecretKey.getBytes())
+				.addClaims(claims).signWith(SignatureAlgorithm.HS256, jwtSecretKey.getBytes())
 				.setExpiration(new Date(System.currentTimeMillis() + convertHourToMillis(jwtTokenValidity))).compact();
 	}
 	
