@@ -31,7 +31,7 @@ public class MemberController {
 	public ResponseEntity<Object> signup(@RequestBody SignupDTO payload){
 		boolean response = memberService.signup(payload);
 		if (response) {
-			return Response.generateResponse(HttpStatus.OK, response, "message", true);
+			return Response.generateResponse(HttpStatus.OK, response, "User has registered.", true);
 		}
 		return Response.generateResponse(HttpStatus.NOT_ACCEPTABLE, null, "Invalid username or password", false);
 	}
