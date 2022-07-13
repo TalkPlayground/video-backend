@@ -2,6 +2,7 @@ package com.playground.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -48,6 +49,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 		member.setMemberUUID(generateUUID());
 		member.setFullName(payload.getFullName());
 		member.setEmail(payload.getEmail());
+		member.setRoles(List.of("ROLE_USER"));
 		member.setPassword(payload.getPassword());
 		member.setCreationDate(LocalDateTime.now());
 		member.setDeleted(false);
