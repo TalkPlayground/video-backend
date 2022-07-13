@@ -8,7 +8,7 @@ import com.playground.dto.SignupDTO;
 @Service
 public interface MemberService {
 
-	boolean login(LoginDTO payload);
+	Object login(LoginDTO payload);
 
 	boolean signup(SignupDTO payload);
 	

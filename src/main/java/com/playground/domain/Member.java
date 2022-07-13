@@ -1,6 +1,7 @@
 package com.playground.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -26,6 +27,7 @@ public class Member {
     private String memberUUID;
     @Indexed(unique = true)
     private String email;
+    private List<String> roles;
     private String fullName;
     private String password;
     private LocalDateTime creationDate;

@@ -1,5 +1,7 @@
 package com.playground.controller;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,8 @@ public class MemberController {
 	
 	@PostMapping("/v1/user/login")
 	public ResponseEntity<Object> login(@RequestBody LoginDTO payload){
-		boolean response = memberService.login(payload);
-		if (response) {
+		Object response = memberService.login(payload);
+		if (Objects.nonNull(response)) {
 			return Response.generateResponse(HttpStatus.OK, response, "Valid Credentials", true);
 		}
 		return Response.generateResponse(HttpStatus.NOT_ACCEPTABLE, null, "Invalid username or password", false);
