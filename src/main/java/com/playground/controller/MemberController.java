@@ -2,6 +2,8 @@ package com.playground.controller;
 
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class MemberController {
 	}
 
 	@PostMapping("/v1/user/register")
-	public ResponseEntity<Object> signup(@RequestBody SignupDTO payload){
+	public ResponseEntity<Object> signup(@RequestBody @Valid SignupDTO payload){
 		boolean response = memberService.signup(payload);
 		if (response) {
 			return Response.generateResponse(HttpStatus.OK, response, "User has registered.", true);

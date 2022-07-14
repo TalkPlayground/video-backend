@@ -1,5 +1,7 @@
 package com.playground.exception;
 
+import java.time.format.DateTimeParseException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -34,6 +36,11 @@ public class ApplicationExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<Object> handleDuplicateKeyException(DuplicateKeyException e, HttpServletRequest request) {
 		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "User has already registered with this email.", false);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<Object> handleDateTimeParseException(DateTimeParseException e, HttpServletRequest request) {
+		return Response.generateResponse(HttpStatus.BAD_REQUEST, null, e.getLocalizedMessage(), false);
 	}
 	
 }

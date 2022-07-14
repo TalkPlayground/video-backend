@@ -56,6 +56,8 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 		member.setRoles(List.of("ROLE_USER"));
 		member.setPassword(encoder.encode(payload.getPassword()));
 		member.setCreationDate(LocalDateTime.now());
+		member.setDob(payload.getDob());
+		member.setInviteCode(payload.getInviteCode());
 		member.setDeleted(false);
 		memberRepository.save(member);
 		return true;

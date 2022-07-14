@@ -1,5 +1,6 @@
 package com.playground.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class Member {
     private String email;
     private List<String> roles;
     private String fullName;
+    private LocalDate dob;
+    private String inviteCode;
     private String password;
     private LocalDateTime creationDate;
     private boolean deleted;
