@@ -19,7 +19,6 @@ public class JwtTokenUtil{
 	@Value("${jwt.secret.key}")
 	private String jwtSecretKey;
 	
-	//@Value("${jwt.token.validity}")
 	private long jwtTokenValidity=8L;
 
 	public String getUsernameFromToken(String token) {
@@ -28,7 +27,6 @@ public class JwtTokenUtil{
 
 	public String generateToken(Member user) {
 		Map<String, Object> claims = new HashMap<>();
-		//claims.put("roles", user.getRoles());
 		claims.put("name", user.getFullName());
 		claims.put("userId", user.getMemberUUID());
 		return Jwts.builder().setSubject(user.getEmail())

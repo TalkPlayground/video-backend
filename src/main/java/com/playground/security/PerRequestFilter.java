@@ -25,9 +25,9 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 public class PerRequestFilter extends OncePerRequestFilter {
 
-	final private JwtTokenUtil jwtTokenUtil;
-	final private HandlerExceptionResolver handlerExceptionResolver;
-	final private MemberServiceImpl memberService;
+	private final JwtTokenUtil jwtTokenUtil;
+	private final HandlerExceptionResolver handlerExceptionResolver;
+	private final MemberServiceImpl memberService;
 
 	public PerRequestFilter(JwtTokenUtil jwtTokenUtil, HandlerExceptionResolver handlerExceptionResolver, MemberServiceImpl memberService) {
 		this.jwtTokenUtil=jwtTokenUtil;
