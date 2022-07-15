@@ -35,4 +35,13 @@ public class Member {
     private String password;
     private LocalDateTime creationDate;
     private boolean deleted;
+    
+	public Member(String memberUUID, String fullName, String email, List<String> roles) {
+		this.memberUUID = memberUUID;
+		this.fullName = fullName;
+		this.email = email;
+		this.roles = roles;
+	}
+    
+    
 }

@@ -1,5 +1,6 @@
 package com.playground.domain;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -18,13 +19,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Document
-public class Group {
+public class Session {
 	@Id
 	private String id;
     @Indexed(unique = true)
-	private String groupUUID;
+	private String sessionUUID;
     private Set<String> memberUUID;
-    private String groupName;
     private String creatorUUID;
+    private LocalDateTime creationDate;
     
 }

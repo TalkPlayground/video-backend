@@ -11,5 +11,6 @@ public interface MemberService {
 	Object login(LoginDTO payload);
 
 	boolean signup(SignupDTO payload);
+	boolean createAnonemousUser(String email, String name) ;
 	
 }
