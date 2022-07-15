@@ -49,8 +49,18 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 
 	@Override
 	public boolean signup(SignupDTO payload) {
-		Member member = new Member();
-		member.setMemberUUID(generateUUID());
+		Optional<Member> memberStream = memberRepository.findByEmail(payload.getEmail());
+		if (memberStream.isPresent() && memberStream.get().getRoles().contains("ROLE_ANONYMOUS_USER")) {
+			Member member = memberStream.get();
+			return mapMemberDetails(member, payload);
+		}else {
+			Member member = new Member();
+			member.setMemberUUID(generateUUID());
+			return mapMemberDetails(member, payload);
+		}
+	}
+
+	private boolean mapMemberDetails(Member member, SignupDTO payload) {
 		member.setFullName(payload.getFullName());
 		member.setEmail(payload.getEmail());
 		member.setRoles(List.of("ROLE_USER"));

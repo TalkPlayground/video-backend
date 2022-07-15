@@ -1,13 +1,17 @@
 package com.playground.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -44,20 +48,20 @@ public class SessionServiceImpl implements SessionService {
 			new Thread(() -> sendOTPMail(email, generatedOtp)).start();
 			return true;
 		}
-		
-		
 	}
 	
 	public void sendOTPMail(String toAddress, String otp) {
 		try {
-			String subject = "Welcome to Playground, please verify your email address to Join at " + LocalDateTime.now();
+			String date = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+					.withZone(ZoneId.of("Asia/Kolkata")));
+			String subject = "Welcome to Playground, please verify your email address to Join at " + date;
 			String body = "System generated OPT :- " + otp;
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setTo(toAddress);
 			message.setSubject(subject);
 			message.setText(body);
 			mailSender.send(message);
-		} catch (MailException ex) {
+		} catch (Exception ex) {
 			log.error(ex.getLocalizedMessage());
 		}
 	}
@@ -66,6 +70,12 @@ public class SessionServiceImpl implements SessionService {
 		Random rnd = new Random();
 		int number = rnd.nextInt(999999);
 		return String.format("%06d", number);
+	}
+
+	@Override
+	public boolean verifyOtp(String email, String otp) {
+		String otpData = otpSessions.getOtp(email);
+		return Objects.nonNull(otpData) ? otpData.equals(otp) : false;
 	}
 	
 	

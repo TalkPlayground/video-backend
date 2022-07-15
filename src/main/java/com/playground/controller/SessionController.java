@@ -1,7 +1,5 @@
 package com.playground.controller;
 
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +15,22 @@ public class SessionController {
 	
 	@Autowired SessionService sessionService;
 	
-	@PostMapping("/v1/user/email/otp")
+	@PostMapping("/v1/user/email/verify")
 	public ResponseEntity<Object> verifyEmailViaOTP(@RequestParam String email, @RequestParam String name){
-		Object response = sessionService.verifyEmail(email, name);
-		if (Objects.nonNull(response)) {
+		boolean response = sessionService.verifyEmail(email, name);
+		if (response) {
 			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
 		}
 		return Response.generateResponse(HttpStatus.BAD_REQUEST, null, "Failed", false);
+	}
+	
+	@PostMapping("/v1/user/otp/verify")
+	public ResponseEntity<Object> verifyOTP(@RequestParam String email, @RequestParam String otp){
+		boolean response = sessionService.verifyOtp(email, otp);
+		if (response) {
+			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+		}
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Invalid OTP.", false);
 	}
 	
 }
