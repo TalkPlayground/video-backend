@@ -5,13 +5,21 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,7 +27,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.playground.domain.Member;
 import com.playground.domain.OtpSessions;
+import com.playground.domain.Session;
+import com.playground.dto.RecordingPayload;
 import com.playground.repository.MemberRepository;
+import com.playground.repository.SessionRepository;
 import com.playground.service.MemberService;
 import com.playground.service.SessionService;
 @Service
@@ -30,6 +41,7 @@ public class SessionServiceImpl implements SessionService {
 	@Autowired MemberService memberService;
 	@Autowired JavaMailSender mailSender;
 	@Autowired OtpSessions otpSessions;
+	@Autowired SessionRepository sessionRepository;
 	
 	private static final Logger log = LoggerFactory.getLogger(SessionServiceImpl.class);
 
@@ -78,5 +90,37 @@ public class SessionServiceImpl implements SessionService {
 		return Objects.nonNull(otpData) ? otpData.equals(otp) : false;
 	}
 	
+	
+	public List<RecordingPayload> fetchRecordingOfSession(String sessionId){
+		String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"/recordings";
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<Object> entity = new HttpEntity<>(headers);
+		ResponseEntity<Object> data = restTemplate.exchange(url, HttpMethod.GET, entity, Object.class);
+		return Collections.emptyList();
+	}
+	
+	
+	public RecordingPayload recordingPayload(String userId) {
+		return RecordingPayload.builder().id(UUID.randomUUID().toString()).recordingStart(LocalDateTime.now().toString())
+				.recordingEnd(LocalDateTime.now().toString()).fileName("Audio only - Pankaj - "+ userId).fileType("M4A")
+				.fileSize(12345).fileExtension("M4A").downloadUrl("").status("COMPLETED")
+				.build();
+	}
+
+	@Override
+	public boolean joinSession(String name, String email) {
+		return memberService.createAnonemousUser(email, name);
+	}
+
+	@Override
+	public boolean storoSession(String sessionId, String memberUUID) {
+		Session session = new Session();
+		session.setSessionUUID(sessionId);
+		session.setMemberUUID(Set.of(memberUUID));
+		session.setCreatorUUID(memberUUID);
+		session.setCreationDate(LocalDateTime.now());
+		sessionRepository.save(session);
+		return true;
+	}
 	
 }

@@ -78,19 +78,31 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 		return uuid.toString();
 	}
 	
+	
 	@Override
 	public boolean createAnonemousUser(String email, String name) {
 		Member member = new Member();
-		member.setMemberUUID(generateUUID());
+		member.setMemberUUID(generateUUID()); 
 		member.setFullName(name);
-		member.setEmail(email);
+
+		member.setEmail(email); 
 		member.setRoles(List.of("ROLE_ANONYMOUS_USER"));
 		member.setCreationDate(LocalDateTime.now());
 		member.setDeleted(false);
+		
 		memberRepository.save(member);
 		return true;
 	}
 
+	public Member loadUserByEmail(String email) throws UsernameNotFoundException {
+		Optional<Member> userStream = memberRepository.findByEmailAndDeleted(email, false);
+		if (userStream.isPresent()) {
+			return userStream.get();
+		}else {
+			throw new UsernameNotFoundException("User not found with username: " + email);
+		}
+	}
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<Member> userStream = memberRepository.findByEmailAndDeleted(username, false);
@@ -100,15 +112,6 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 			return new org.springframework.security.core.userdetails.User(username, user.getPassword(), userRoles);
 		}else {
 			throw new UsernameNotFoundException("User not found with username: " + username);
-		}
-	}
-	
-	public Member loadUserByEmail(String email) throws UsernameNotFoundException {
-		Optional<Member> userStream = memberRepository.findByEmailAndDeleted(email, false);
-		if (userStream.isPresent()) {
-			return userStream.get();
-		}else {
-			throw new UsernameNotFoundException("User not found with username: " + email);
 		}
 	}
 

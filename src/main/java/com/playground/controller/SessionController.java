@@ -33,4 +33,22 @@ public class SessionController {
 		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Invalid OTP.", false);
 	}
 	
+	@PostMapping("/v1/user/session/join")
+	public ResponseEntity<Object> joinSession(@RequestParam String name, @RequestParam String email){
+		boolean response = sessionService.joinSession(name, email);
+		if (response) {
+			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+		}
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+	}
+	
+	@PostMapping("/v1/user/session/store")
+	public ResponseEntity<Object> storoSession(@RequestParam String sessionId, @RequestParam String memberUUID){
+		boolean response = sessionService.storoSession(sessionId,memberUUID);
+		if (response) {
+			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+		}
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+	}
+	
 }

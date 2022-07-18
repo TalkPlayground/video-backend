@@ -36,7 +36,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().headers().frameOptions().disable();
-		http.authorizeRequests().antMatchers("/v1/user/login", "/v1/user/register", "/v1/user/otp/verify", "/v1/user/email/verify")
+		http.authorizeRequests().antMatchers("/v1/user/login", "/v1/user/register", "/v1/user/otp/verify", "/v1/user/email/verify",
+				"/v1/user/session/join")
 		.permitAll();
 		http.authorizeRequests().anyRequest().authenticated();
 		http.exceptionHandling().authenticationEntryPoint(authEntryPoint);
