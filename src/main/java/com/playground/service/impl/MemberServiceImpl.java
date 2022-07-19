@@ -81,17 +81,20 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 	
 	@Override
 	public boolean createAnonemousUser(String email, String name) {
-		Member member = new Member();
-		member.setMemberUUID(generateUUID()); 
-		member.setFullName(name);
-
-		member.setEmail(email); 
-		member.setRoles(List.of("ROLE_ANONYMOUS_USER"));
-		member.setCreationDate(LocalDateTime.now());
-		member.setDeleted(false);
-		
-		memberRepository.save(member);
-		return true;
+		Optional<Member> memberStream = memberRepository.findByEmail(email);
+		if (memberStream.isPresent()) {
+			return true;
+		}else {
+			Member member = new Member();
+			member.setMemberUUID(generateUUID()); 
+			member.setFullName(name);
+			member.setEmail(email); 
+			member.setRoles(List.of("ROLE_ANONYMOUS_USER"));
+			member.setCreationDate(LocalDateTime.now());
+			member.setDeleted(false);
+			memberRepository.save(member);
+			return true;
+		}
 	}
 
 	public Member loadUserByEmail(String email) throws UsernameNotFoundException {
