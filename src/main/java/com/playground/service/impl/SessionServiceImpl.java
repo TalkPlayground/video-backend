@@ -8,6 +8,7 @@ import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -105,6 +106,7 @@ public class SessionServiceImpl implements SessionService {
 	public boolean joinSession(String name, String email, String sessionId) {
 		String memberId = memberService.createAnonemousUser(email, name);
 		storoSession(sessionId, memberId);
+		//handleRecordingStatus(sessionId, "recording.start");
 		return true;
 	}
 	
@@ -182,6 +184,21 @@ public class SessionServiceImpl implements SessionService {
 		String userEmail = fileName.substring(second+2);
 		Optional<Member> email = memberRepository.findByEmail(userEmail);
 		return email.get().getMemberUUID();
+	}
+	
+	private void handleRecordingStatus(String sessionId, String event) {
+		try {
+			String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"/events";
+			Map<String, Object> payload = new HashMap<>();
+			payload.put("method", event);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setBearerAuth(zoomJwtToken);
+			HttpEntity<Object> entity = new HttpEntity<>(payload,headers);
+			ResponseEntity<Object> data = restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
+			log.info(data.getStatusCodeValue()==200 ? "Recording has started on - "+ sessionId : "Someting issues in start recording on - "+ sessionId);
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage());
+		}
 	}
 	
 }
