@@ -6,13 +6,13 @@ import lombok.Data;
 @Data
 @Builder
 public class RecordingPayload {
-	 private String id;
-	    private String recordingStart;
-	    private String recordingEnd;
-	    private String fileName;
-	    private String fileType;
-	    private String fileExtension;
-	    private int fileSize;
-	    private String downloadUrl;
-	    private String status;
+	public String id;
+    public String recording_start;
+    public String recording_end;
+    public String file_name;
+    public String file_type;
+    public String file_extension;
+    public int file_size;
+    public String download_url;
+    public String status;
 }

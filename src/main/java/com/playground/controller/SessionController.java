@@ -34,21 +34,11 @@ public class SessionController {
 	}
 	
 	@PostMapping("/v1/user/session/join")
-	public ResponseEntity<Object> joinSession(@RequestParam String name, @RequestParam String email){
-		boolean response = sessionService.joinSession(name, email);
+	public ResponseEntity<Object> joinSession(@RequestParam String name, @RequestParam String email, @RequestParam String sessionId){
+		boolean response = sessionService.joinSession(name, email, sessionId);
 		if (response) {
 			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
 		}
 		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
-	}
-	
-	@PostMapping("/v1/user/session/store")
-	public ResponseEntity<Object> storoSession(@RequestParam String sessionId, @RequestParam String memberUUID){
-		boolean response = sessionService.storoSession(sessionId,memberUUID);
-		if (response) {
-			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
-		}
-		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
-	}
-	
+	}	
 }

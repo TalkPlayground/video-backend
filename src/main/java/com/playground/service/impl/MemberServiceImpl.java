@@ -80,11 +80,9 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 	
 	
 	@Override
-	public boolean createAnonemousUser(String email, String name) {
+	public String createAnonemousUser(String email, String name) {
 		Optional<Member> memberStream = memberRepository.findByEmail(email);
-		if (memberStream.isPresent()) {
-			return true;
-		}else {
+		if (!memberStream.isPresent()) {
 			Member member = new Member();
 			member.setMemberUUID(generateUUID()); 
 			member.setFullName(name);
@@ -93,8 +91,9 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 			member.setCreationDate(LocalDateTime.now());
 			member.setDeleted(false);
 			memberRepository.save(member);
-			return true;
+			return member.getMemberUUID();
 		}
+		return memberStream.get().getMemberUUID();
 	}
 
 	public Member loadUserByEmail(String email) throws UsernameNotFoundException {

@@ -1,6 +1,5 @@
 package com.playground.domain;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -26,6 +25,9 @@ public class Session {
 	private String sessionUUID;
     private Set<String> memberUUID;
     private String creatorUUID;
-    private LocalDateTime creationDate;
+    private String startTime;
+    private String endTime;
+    private boolean hasRecording;
+    private String sessionStatus;
     
 }

@@ -6,16 +6,18 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,11 +27,16 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playground.domain.Member;
 import com.playground.domain.OtpSessions;
+import com.playground.domain.Recordings;
 import com.playground.domain.Session;
 import com.playground.dto.RecordingPayload;
+import com.playground.dto.SessionPayload;
 import com.playground.repository.MemberRepository;
+import com.playground.repository.RecordingRepository;
 import com.playground.repository.SessionRepository;
 import com.playground.service.MemberService;
 import com.playground.service.SessionService;
@@ -42,8 +49,12 @@ public class SessionServiceImpl implements SessionService {
 	@Autowired JavaMailSender mailSender;
 	@Autowired OtpSessions otpSessions;
 	@Autowired SessionRepository sessionRepository;
+	@Autowired RecordingRepository recordingRepository;
+	@Autowired ObjectMapper mapper;
 	
 	private static final Logger log = LoggerFactory.getLogger(SessionServiceImpl.class);
+	@Value("${zoom.video-sdk.jwt.token}")
+	private String zoomJwtToken;
 
 	@Override
 	public boolean verifyEmail(String email, String name) {
@@ -90,37 +101,87 @@ public class SessionServiceImpl implements SessionService {
 		return Objects.nonNull(otpData) ? otpData.equals(otp) : false;
 	}
 	
-	
-	public List<RecordingPayload> fetchRecordingOfSession(String sessionId){
-		String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"/recordings";
-		HttpHeaders headers = new HttpHeaders();
-		HttpEntity<Object> entity = new HttpEntity<>(headers);
-		ResponseEntity<Object> data = restTemplate.exchange(url, HttpMethod.GET, entity, Object.class);
-		return Collections.emptyList();
-	}
-	
-	
-	public RecordingPayload recordingPayload(String userId) {
-		return RecordingPayload.builder().id(UUID.randomUUID().toString()).recordingStart(LocalDateTime.now().toString())
-				.recordingEnd(LocalDateTime.now().toString()).fileName("Audio only - Pankaj - "+ userId).fileType("M4A")
-				.fileSize(12345).fileExtension("M4A").downloadUrl("").status("COMPLETED")
-				.build();
-	}
-
 	@Override
-	public boolean joinSession(String name, String email) {
-		return memberService.createAnonemousUser(email, name);
-	}
-
-	@Override
-	public boolean storoSession(String sessionId, String memberUUID) {
-		Session session = new Session();
-		session.setSessionUUID(sessionId);
-		session.setMemberUUID(Set.of(memberUUID));
-		session.setCreatorUUID(memberUUID);
-		session.setCreationDate(LocalDateTime.now());
-		sessionRepository.save(session);
+	public boolean joinSession(String name, String email, String sessionId) {
+		String memberId = memberService.createAnonemousUser(email, name);
+		storoSession(sessionId, memberId);
 		return true;
+	}
+	
+	public void storoSession(String sessionId, String memberUUID) {
+		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(sessionId);
+		if (!sessionStream.isPresent()) {
+			Session session = new Session();
+			session.setSessionUUID(sessionId);
+			session.setMemberUUID(Set.of(memberUUID));
+			session.setCreatorUUID(memberUUID);
+			session.setHasRecording(false);
+			session.setSessionStatus("LIVE");
+			sessionRepository.save(session);
+		}else {
+			Session session = sessionStream.get();
+			session.getMemberUUID().add(memberUUID);
+			sessionRepository.save(session);
+		}
+	}
+	
+	@Override
+	public SessionPayload fetchSessionDetails(String sessionId){
+		try {
+			String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"?type=past";
+			HttpHeaders headers = new HttpHeaders();
+			headers.setBearerAuth(zoomJwtToken);
+			HttpEntity<SessionPayload> entity = new HttpEntity<>(headers);
+			ResponseEntity<SessionPayload> data = restTemplate.exchange(url, HttpMethod.GET, entity, SessionPayload.class);
+			return data.getStatusCodeValue()==200 ? data.getBody() : null;
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage());
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public List<RecordingPayload> fetchRecordingOfSession(String sessionId){
+		try {
+			String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"/recordings";
+			HttpHeaders headers = new HttpHeaders();
+			headers.setBearerAuth(zoomJwtToken);
+			HttpEntity<HashMap<String, Object>> entity = new HttpEntity<>(headers);
+			ResponseEntity<HashMap> result = restTemplate.exchange(url, HttpMethod.GET, entity, HashMap.class);
+			if (result.getStatusCodeValue()==200) {
+				Object object = result.getBody().get("participant_audio_files");
+				return mapper.convertValue(object, new TypeReference<List<RecordingPayload>>(){});
+			}
+			return Collections.emptyList();
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage() + "In this sessionId :-  " + sessionId);
+			return Collections.emptyList();
+		}
+		
+	}
+
+	@Override
+	public void saveRecordingOfSession(String sessionId) {
+		List<RecordingPayload> listOfData = fetchRecordingOfSession(sessionId);
+		List<Recordings> mapedData = listOfData.stream().map(data->{
+			Recordings recordings = new Recordings();
+			recordings.setRecordingUUID(data.getId());
+			recordings.setSessionUUID(sessionId);
+			recordings.setMemberUUID(getMemberUUID(data.getFile_name()));
+			recordings.setZoomUrl(data.getDownload_url());
+			recordings.setRecordingStart(data.getRecording_start());
+			recordings.setRecordingEnd(data.getRecording_end());
+			return recordings;
+		}).collect(Collectors.toList());
+		recordingRepository.saveAll(mapedData);
+	}
+
+	private String getMemberUUID(String fileName) {
+		int first = fileName.indexOf('-');
+		int second = fileName.indexOf('-', first + 1);
+		String userEmail = fileName.substring(second+2);
+		Optional<Member> email = memberRepository.findByEmail(userEmail);
+		return email.get().getMemberUUID();
 	}
 	
 }
