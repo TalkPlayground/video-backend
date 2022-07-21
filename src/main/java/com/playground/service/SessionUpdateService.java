@@ -30,11 +30,8 @@ public class SessionUpdateService {
 		try {
 			List<Session> listOfSession = sessionRepository.findAllBySessionStatus("LIVE");
 			listOfSession.parallelStream().forEach(data-> {
-				SessionPayload sessionDetails = sessionService.fetchSessionDetails(data.getSessionUUID());
+				SessionPayload sessionDetails = sessionService.checkLiveSessionDetails(data);
 				if (Objects.nonNull(sessionDetails)) {
-					data.setHasRecording(sessionDetails.isHas_recording());
-					data.setSessionStatus("PAST");
-					sessionRepository.save(data);
 					if (sessionDetails.isHas_recording()) {
 						sessionService.saveRecordingOfSession(data.getSessionUUID());
 					};

@@ -74,8 +74,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 	}
 
 	private String generateUUID() {
-		UUID uuid = UUID.randomUUID();
-		return uuid.toString();
+		return UUID.randomUUID().toString().replaceAll("[-+.^:,]","").substring(0, 14);
 	}
 	
 	

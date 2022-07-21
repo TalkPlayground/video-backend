@@ -25,6 +25,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -104,40 +105,64 @@ public class SessionServiceImpl implements SessionService {
 	}
 	
 	@Override
-	public boolean joinSession(String name, String email, String sessionId) {
-		String memberId = memberService.createAnonemousUser(email, name);
-		storoSession(sessionId, memberId);
-		//handleRecordingStatus(sessionId, "recording.start");
-		return true;
+	public String joinSession(String name, String email) {
+		return memberService.createAnonemousUser(email, name);
 	}
 	
-	public void storoSession(String sessionId, String memberUUID) {
+	public boolean storeSession(String userId, String sessionId) {
+		Optional<Member> memberStream = memberRepository.findByMemberUUID(userId);
+		if (!memberStream.isPresent()) {
+			throw new UsernameNotFoundException("User not found with id - " + userId);
+		}
+		
 		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(sessionId);
 		if (!sessionStream.isPresent()) {
 			Session session = new Session();
 			session.setSessionUUID(sessionId);
-			session.setMemberUUID(Set.of(memberUUID));
-			session.setCreatorUUID(memberUUID);
+			session.setMemberUUID(Set.of(userId));
+			session.setCreatorUUID(userId);
 			session.setHasRecording(false);
 			session.setSessionStatus("LIVE");
 			sessionRepository.save(session);
+			return true;
 		}else {
 			Session session = sessionStream.get();
-			session.getMemberUUID().add(memberUUID);
+			session.getMemberUUID().add(userId);
 			sessionRepository.save(session);
+			return true;
 		}
 	}
 	
 	@Override
-	public SessionPayload fetchSessionDetails(String sessionId){
+	public SessionPayload checkLiveSessionDetails(Session session){
 		try {
-			String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"?type=past";
+			String url = "https://api.zoom.us/v2/videosdk/sessions/"+session.getSessionUUID()+"?type=live";
+			HttpHeaders headers = new HttpHeaders();
+			headers.setBearerAuth(zoomJwtToken);
+			HttpEntity<SessionPayload> entity = new HttpEntity<>(headers);
+			restTemplate.exchange(url, HttpMethod.GET, entity, SessionPayload.class);
+			return null;
+		} catch (Exception e) {
+			return checkPastSessionDetails(session);
+		}
+	}
+	@Override
+	public SessionPayload checkPastSessionDetails(Session session){
+		try {
+			String url = "https://api.zoom.us/v2/videosdk/sessions/"+session.getSessionUUID()+"?type=past";
 			HttpHeaders headers = new HttpHeaders();
 			headers.setBearerAuth(zoomJwtToken);
 			HttpEntity<SessionPayload> entity = new HttpEntity<>(headers);
 			ResponseEntity<SessionPayload> data = restTemplate.exchange(url, HttpMethod.GET, entity, SessionPayload.class);
+			if (data.getStatusCodeValue()==200) {
+				session.setHasRecording(data.getBody().isHas_recording());
+				session.setSessionStatus("PAST");
+				sessionRepository.save(session);
+			}
 			return data.getStatusCodeValue()==200 ? data.getBody() : null;
 		} catch (Exception e) {
+			session.setSessionStatus("NOT_FOUND");
+			sessionRepository.save(session);
 			log.error(e.getLocalizedMessage());
 			return null;
 		}
@@ -157,7 +182,7 @@ public class SessionServiceImpl implements SessionService {
 			}
 			return Collections.emptyList();
 		} catch (Exception e) {
-			log.error(e.getLocalizedMessage() + "In this sessionId :-  " + sessionId);
+			log.error(e.getLocalizedMessage() + " at this sessionId :-  " + sessionId);
 			return Collections.emptyList();
 		}
 	}
@@ -179,11 +204,14 @@ public class SessionServiceImpl implements SessionService {
 	}
 
 	private String getMemberUUID(String fileName) {
-		int first = fileName.indexOf('-');
-		int second = fileName.indexOf('-', first + 1);
-		String userEmail = fileName.substring(second+1);
-		Optional<Member> email = memberRepository.findByEmail(userEmail);
-		return email.get().getMemberUUID();
+		try {
+			int first = fileName.indexOf('-');
+			String userId = fileName.substring(first+2, first+16);
+			return userId;
+		} catch (Exception e) {
+			log.error("Issues in memberId generating " + fileName + " - " +e.getLocalizedMessage());
+			return null;
+		}
 	}
 	
 	@Override
@@ -225,6 +253,5 @@ public class SessionServiceImpl implements SessionService {
 			return true;
 		}
 		return false;
-	}
-	
+	}	
 }
