@@ -35,9 +35,11 @@ import com.playground.domain.Member;
 import com.playground.domain.OtpSessions;
 import com.playground.domain.Recordings;
 import com.playground.domain.Session;
+import com.playground.dto.HandleRecordingDTO;
 import com.playground.dto.RecordingPayload;
 import com.playground.dto.SessionPayload;
 import com.playground.dto.SessionTranscriptFile;
+import com.playground.dto.StoreSessionDTO;
 import com.playground.repository.MemberRepository;
 import com.playground.repository.RecordingRepository;
 import com.playground.repository.SessionRepository;
@@ -109,25 +111,25 @@ public class SessionServiceImpl implements SessionService {
 		return memberService.createAnonemousUser(email, name);
 	}
 	
-	public boolean storeSession(String userId, String sessionId) {
-		Optional<Member> memberStream = memberRepository.findByMemberUUID(userId);
+	public boolean storeSession(StoreSessionDTO data) {
+		Optional<Member> memberStream = memberRepository.findByMemberUUID(data.getSessionId());
 		if (!memberStream.isPresent()) {
-			throw new UsernameNotFoundException("User not found with id - " + userId);
+			throw new UsernameNotFoundException("User not found with id - " + data.getUserId());
 		}
 		
-		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(sessionId);
+		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(data.getSessionId());
 		if (!sessionStream.isPresent()) {
 			Session session = new Session();
-			session.setSessionUUID(sessionId);
-			session.setMemberUUID(Set.of(userId));
-			session.setCreatorUUID(userId);
+			session.setSessionUUID(data.getSessionId());
+			session.setMemberUUID(Set.of(data.getUserId()));
+			session.setCreatorUUID(data.getUserId());
 			session.setHasRecording(false);
 			session.setSessionStatus("LIVE");
 			sessionRepository.save(session);
 			return true;
 		}else {
 			Session session = sessionStream.get();
-			session.getMemberUUID().add(userId);
+			session.getMemberUUID().add(data.getUserId());
 			sessionRepository.save(session);
 			return true;
 		}
@@ -215,16 +217,16 @@ public class SessionServiceImpl implements SessionService {
 	}
 	
 	@Override
-	public boolean handleRecordingStatus(String sessionId, boolean status) {
+	public boolean handleRecordingStatus(HandleRecordingDTO data) {
 		try {
-			String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"/events";
+			String url = "https://api.zoom.us/v2/videosdk/sessions/"+data.getSessionId()+"/events";
 			Map<String, Object> payload = new HashMap<>();
-			payload.put("method", status ? "recording.start" : "recording.stop");
+			payload.put("method", data.isStatus() ? "recording.start" : "recording.stop");
 			HttpHeaders headers = new HttpHeaders();
 			headers.setBearerAuth(zoomJwtToken);
 			HttpEntity<Object> entity = new HttpEntity<>(payload,headers);
-			ResponseEntity<Object> data = restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
-			return data.getStatusCodeValue()==202;
+			ResponseEntity<Object> result = restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
+			return result.getStatusCodeValue()==202;
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			return false;

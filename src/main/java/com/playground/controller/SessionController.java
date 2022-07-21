@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.playground.dto.HandleRecordingDTO;
 import com.playground.dto.SessionTranscriptFile;
+import com.playground.dto.StoreSessionDTO;
 import com.playground.service.SessionService;
 import com.playground.utils.Response;
 
@@ -47,8 +49,8 @@ public class SessionController {
 	}	
 	
 	@PostMapping("/v1/user/session/store")
-	public ResponseEntity<Object> storeSession(@RequestParam String userId, @RequestParam String sessionId){
-		boolean response = sessionService.storeSession(userId, sessionId);
+	public ResponseEntity<Object> storeSession(@RequestBody StoreSessionDTO data){
+		boolean response = sessionService.storeSession(data);
 		if (response) {
 			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
 		}
@@ -56,8 +58,8 @@ public class SessionController {
 	}	
 	
 	@PostMapping("/v1/user/session/recording")
-	public ResponseEntity<Object> handleZoomSdkRecording(@RequestParam String sessionId , @RequestParam boolean status){
-		boolean response = sessionService.handleRecordingStatus(sessionId, status);
+	public ResponseEntity<Object> handleZoomSdkRecording(@RequestBody HandleRecordingDTO data){
+		boolean response = sessionService.handleRecordingStatus(data);
 		if (response) {
 			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
 		}
@@ -72,4 +74,5 @@ public class SessionController {
 		}
 		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
 	}	
+	
 }

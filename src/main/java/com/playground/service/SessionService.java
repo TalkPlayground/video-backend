@@ -3,8 +3,10 @@ package com.playground.service;
 import org.springframework.stereotype.Service;
 
 import com.playground.domain.Session;
+import com.playground.dto.HandleRecordingDTO;
 import com.playground.dto.SessionPayload;
 import com.playground.dto.SessionTranscriptFile;
+import com.playground.dto.StoreSessionDTO;
 
 @Service
 public interface SessionService {
@@ -13,11 +15,11 @@ public interface SessionService {
 	boolean verifyOtp(String email, String otp);
 	String joinSession(String name, String email);
 	public void saveRecordingOfSession(String sessionId);
-	public boolean handleRecordingStatus(String sessionId, boolean status);
+	public boolean handleRecordingStatus(HandleRecordingDTO data);
 	boolean insertTranscriptFiles(SessionTranscriptFile data);
 	boolean updateAwsUrlInRecording(String recordingId, String awsUrl);
 	SessionPayload checkLiveSessionDetails(Session session);
 	SessionPayload checkPastSessionDetails(Session session);
-	boolean storeSession(String userId, String sessionId);
+	boolean storeSession(StoreSessionDTO data);
 
 }
