@@ -41,4 +41,13 @@ public class SessionController {
 		}
 		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
 	}	
+	
+	@PostMapping("/v1/user/session/recording")
+	public ResponseEntity<Object> handleZoomSdkRecording(@RequestParam String sessionId , @RequestParam boolean status){
+		boolean response = sessionService.handleRecordingStatus(sessionId, status);
+		if (response) {
+			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+		}
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+	}	
 }

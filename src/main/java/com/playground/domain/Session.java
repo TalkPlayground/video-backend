@@ -1,10 +1,13 @@
 package com.playground.domain;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.playground.dto.TranscriptFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,5 +32,6 @@ public class Session {
     private String endTime;
     private boolean hasRecording;
     private String sessionStatus;
+    private List<TranscriptFile> transcriptFiles;
     
 }

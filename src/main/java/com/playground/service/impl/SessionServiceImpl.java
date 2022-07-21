@@ -36,6 +36,7 @@ import com.playground.domain.Recordings;
 import com.playground.domain.Session;
 import com.playground.dto.RecordingPayload;
 import com.playground.dto.SessionPayload;
+import com.playground.dto.SessionTranscriptFile;
 import com.playground.repository.MemberRepository;
 import com.playground.repository.RecordingRepository;
 import com.playground.repository.SessionRepository;
@@ -76,8 +77,8 @@ public class SessionServiceImpl implements SessionService {
 	
 	public void sendOTPMail(String toAddress, String otp) {
 		try {
-			String date = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-					.withZone(ZoneId.of("Asia/Kolkata")));
+			String date = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(DateTimeFormatter
+					.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneId.of("Asia/Kolkata")));
 			String subject = "Welcome to Playground, please verify your email address to Join at " + date;
 			String body = "System generated OPT :- " + otp;
 			SimpleMailMessage message = new SimpleMailMessage();
@@ -159,7 +160,6 @@ public class SessionServiceImpl implements SessionService {
 			log.error(e.getLocalizedMessage() + "In this sessionId :-  " + sessionId);
 			return Collections.emptyList();
 		}
-		
 	}
 
 	@Override
@@ -181,24 +181,50 @@ public class SessionServiceImpl implements SessionService {
 	private String getMemberUUID(String fileName) {
 		int first = fileName.indexOf('-');
 		int second = fileName.indexOf('-', first + 1);
-		String userEmail = fileName.substring(second+2);
+		String userEmail = fileName.substring(second+1);
 		Optional<Member> email = memberRepository.findByEmail(userEmail);
 		return email.get().getMemberUUID();
 	}
 	
-	private void handleRecordingStatus(String sessionId, String event) {
+	@Override
+	public boolean handleRecordingStatus(String sessionId, boolean status) {
 		try {
 			String url = "https://api.zoom.us/v2/videosdk/sessions/"+sessionId+"/events";
 			Map<String, Object> payload = new HashMap<>();
-			payload.put("method", event);
+			payload.put("method", status ? "recording.start" : "recording.stop");
 			HttpHeaders headers = new HttpHeaders();
 			headers.setBearerAuth(zoomJwtToken);
 			HttpEntity<Object> entity = new HttpEntity<>(payload,headers);
 			ResponseEntity<Object> data = restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
-			log.info(data.getStatusCodeValue()==200 ? "Recording has started on - "+ sessionId : "Someting issues in start recording on - "+ sessionId);
+			return data.getStatusCodeValue()==202;
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
+			return false;
 		}
+	}
+
+	@Override
+	public boolean insertTranscriptFiles(SessionTranscriptFile data) {
+		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(data.getSessionId());
+		if (sessionStream.isPresent()) {
+			Session session = sessionStream.get();
+			session.setTranscriptFiles(data.getTranscriptFiles());
+			sessionRepository.save(session);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean updateAwsUrlInRecording(String recordingId, String awsUrl) {
+		Optional<Recordings> recordingStream = recordingRepository.findByRecordingUUID(recordingId);
+		if (recordingStream.isPresent()) {
+			Recordings recordings = recordingStream.get();
+			recordings.setAwsUrl(awsUrl);
+			recordingRepository.save(recordings);
+			return true;
+		}
+		return false;
 	}
 	
 }

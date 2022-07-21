@@ -1,8 +1,11 @@
 package com.playground;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
@@ -32,9 +35,18 @@ public class PlaygroundVideoBackendApplication {
 				.build();
 	}
 	
+//	@Bean
+//	public RestTemplate restTemplate() {
+//		return new RestTemplate();
+//	}
+//	
 	@Bean
 	public RestTemplate restTemplate() {
-		return new RestTemplate();
+	    RestTemplate restTemplate = new RestTemplate();
+	    HttpClient httpClient = HttpClientBuilder.create().build();
+	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	    restTemplate.setRequestFactory(requestFactory);
+	    return restTemplate;
 	}
 	
 	@Bean

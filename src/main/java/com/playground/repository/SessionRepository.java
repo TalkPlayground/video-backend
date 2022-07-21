@@ -11,7 +11,6 @@ import com.playground.domain.Session;
 public interface SessionRepository extends MongoRepository<Session, String> {
 
 	Optional<Session> findBySessionUUID(String sessionId);
-
 	List<Session> findAllBySessionStatus(String status);
 
 }

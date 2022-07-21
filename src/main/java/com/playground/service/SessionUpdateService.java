@@ -29,7 +29,7 @@ public class SessionUpdateService {
 	public void updateSessionDetails() {
 		try {
 			List<Session> listOfSession = sessionRepository.findAllBySessionStatus("LIVE");
-			listOfSession.parallelStream().forEach(data->{
+			listOfSession.parallelStream().forEach(data-> {
 				SessionPayload sessionDetails = sessionService.fetchSessionDetails(data.getSessionUUID());
 				if (Objects.nonNull(sessionDetails)) {
 					data.setHasRecording(sessionDetails.isHas_recording());
