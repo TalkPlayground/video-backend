@@ -112,7 +112,7 @@ public class SessionServiceImpl implements SessionService {
 	}
 	
 	public boolean storeSession(StoreSessionDTO data) {
-		Optional<Member> memberStream = memberRepository.findByMemberUUID(data.getSessionId());
+		Optional<Member> memberStream = memberRepository.findByMemberUUID(data.getUserId());
 		if (!memberStream.isPresent()) {
 			throw new UsernameNotFoundException("User not found with id - " + data.getUserId());
 		}
