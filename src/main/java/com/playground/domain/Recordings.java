@@ -1,7 +1,5 @@
 package com.playground.domain;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,9 +22,9 @@ public class Recordings {
 	@Indexed(unique = true)	
 	private String recordingUUID;
 	private String sessionUUID;
-	private String groupUUID;
 	private String memberUUID;
 	private String zoomUrl;
 	private String awsUrl;
-	private LocalDateTime date;
+	private String recordingStart;
+	private String recordingEnd;
 }
