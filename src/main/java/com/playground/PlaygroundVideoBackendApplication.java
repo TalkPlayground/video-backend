@@ -1,20 +1,9 @@
 package com.playground;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.client.RestTemplate;
-
-import com.playground.domain.OtpSessions;
-
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
@@ -24,33 +13,27 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class PlaygroundVideoBackendApplication {
 
 	public static void main(String[] args) {
+		SSLContextHelper.setSslProperties();
 		SpringApplication.run(PlaygroundVideoBackendApplication.class, args);
 	}
-	
-	@Bean
-	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(RequestHandlerSelectors.basePackage("com.playground"))
-				.build();
+
+	protected static class SSLContextHelper {
+		private static final String SSL_TRUST_STORE = "javax.net.ssl.trustStore";
+		private static final String SSL_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+		private static final String SSL_TRUST_STORE_TYPE = "javax.net.ssl.trustStoreType";
+		private static final String KEY_STORE_TYPE = "JKS";
+		private static final String DEFAULT_KEY_STORE_PASSWORD = "playground";
+		private static final String DEFAULT_KEYSTORE = "rds-truststore.jks";
+
+		private static void setSslProperties() {
+			try {
+				System.setProperty(SSL_TRUST_STORE, DEFAULT_KEYSTORE);
+				System.setProperty(SSL_TRUST_STORE_TYPE, KEY_STORE_TYPE);
+				System.setProperty(SSL_TRUST_STORE_PASSWORD, DEFAULT_KEY_STORE_PASSWORD);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
-//	@Bean
-//	public RestTemplate restTemplate() {
-//		return new RestTemplate();
-//	}
-//	
-	@Bean
-	public RestTemplate restTemplate() {
-	    RestTemplate restTemplate = new RestTemplate();
-	    HttpClient httpClient = HttpClientBuilder.create().build();
-	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-	    restTemplate.setRequestFactory(requestFactory);
-	    return restTemplate;
-	}
-	
-	@Bean
-	public OtpSessions otpSessions() {
-		return new OtpSessions();
-	}
+
 }
