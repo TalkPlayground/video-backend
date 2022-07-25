@@ -1,5 +1,7 @@
 package com.playground;
 
+import java.util.Objects;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -24,9 +26,14 @@ public class PlaygroundVideoBackendApplication {
 		private static final String KEY_STORE_TYPE = "JKS";
 		private static final String DEFAULT_KEY_STORE_PASSWORD = "playground";
 		private static final String DEFAULT_KEYSTORE = "rds-truststore.jks";
+		private static final String SSL_KEYSTORE = "sslKeyPath";
 
 		private static void setSslProperties() {
 			try {
+				String sslKeyStore = System.getProperty(SSL_KEYSTORE);
+				if (Objects.isNull(sslKeyStore)) {
+					sslKeyStore = DEFAULT_KEYSTORE;
+				}
 				System.setProperty(SSL_TRUST_STORE, DEFAULT_KEYSTORE);
 				System.setProperty(SSL_TRUST_STORE_TYPE, KEY_STORE_TYPE);
 				System.setProperty(SSL_TRUST_STORE_PASSWORD, DEFAULT_KEY_STORE_PASSWORD);
