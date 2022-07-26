@@ -17,7 +17,6 @@ public interface SessionService {
 	public void saveRecordingOfSession(String sessionId);
 	public boolean handleRecordingStatus(HandleRecordingDTO data);
 	boolean insertTranscriptFiles(SessionTranscriptFile data);
-	boolean updateAwsUrlInRecording(String recordingId, String awsUrl);
 	SessionPayload checkLiveSessionDetails(Session session);
 	SessionPayload checkPastSessionDetails(Session session);
 	boolean storeSession(StoreSessionDTO data);

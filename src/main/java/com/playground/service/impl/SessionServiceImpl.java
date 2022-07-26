@@ -60,6 +60,8 @@ public class SessionServiceImpl implements SessionService {
 	private static final Logger log = LoggerFactory.getLogger(SessionServiceImpl.class);
 	@Value("${zoom.video-sdk.jwt.token}")
 	private String zoomJwtToken;
+	
+	private String awsUrl="https://playground-audio.s3.us-west-2.amazonaws.com/stage/";
 
 	@Override
 	public boolean verifyEmail(String email, String name) {
@@ -202,7 +204,11 @@ public class SessionServiceImpl implements SessionService {
 			recordings.setRecordingEnd(data.getRecording_end());
 			return recordings;
 		}).collect(Collectors.toList());
-		recordingRepository.saveAll(mapedData);
+		List<Recordings> savedData = recordingRepository.saveAll(mapedData);
+		
+		savedData.parallelStream().forEach(rData->{
+			updateAwsUrlInRecording(rData.getMemberUUID(), rData.getRecordingUUID(), rData.getZoomUrl());
+		});
 	}
 
 	private String getMemberUUID(String fileName) {
@@ -244,16 +250,29 @@ public class SessionServiceImpl implements SessionService {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean updateAwsUrlInRecording(String recordingId, String awsUrl) {
-		Optional<Recordings> recordingStream = recordingRepository.findByRecordingUUID(recordingId);
-		if (recordingStream.isPresent()) {
-			Recordings recordings = recordingStream.get();
-			recordings.setAwsUrl(awsUrl);
-			recordingRepository.save(recordings);
-			return true;
+	
+	public void updateAwsUrlInRecording(String memberId, String recordingId, String zoomUrl) {
+		try {
+			String url = "https://om4c8gljhj.execute-api.us-west-2.amazonaws.com/stage/PushAudioOnS3";
+			String fileName = memberId+"_"+recordingId+".m4a";
+			Map<String, Object> payload = new HashMap<>();
+			payload.put("url", zoomUrl);
+			payload.put("fileName", fileName);
+			HttpHeaders headers = new HttpHeaders();
+			HttpEntity<Object> entity = new HttpEntity<>(payload,headers);
+			ResponseEntity<Object> result = restTemplate.exchange(url, HttpMethod.POST, entity, Object.class);
+			if (result.getStatusCodeValue()==200) {
+				Optional<Recordings> recordingStream = recordingRepository.findByRecordingUUID(recordingId);
+				if (recordingStream.isPresent()) {
+					Recordings recordings = recordingStream.get();
+					recordings.setAwsUrl(awsUrl+fileName);
+					recordingRepository.save(recordings);
+				}
+			}else {
+				log.error("Something wrong in lemda api. : -" + recordingId);
+			}
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage());
 		}
-		return false;
-	}	
+	}
 }
