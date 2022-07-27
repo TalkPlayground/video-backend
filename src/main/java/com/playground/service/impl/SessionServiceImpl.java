@@ -160,6 +160,7 @@ public class SessionServiceImpl implements SessionService {
 			ResponseEntity<SessionPayload> data = restTemplate.exchange(url, HttpMethod.GET, entity, SessionPayload.class);
 			if (data.getStatusCodeValue()==200) {
 				session.setHasRecording(data.getBody().isHas_recording());
+				session.setStartTime(data.getBody().getStart_time());
 				session.setSessionStatus("PAST");
 				sessionRepository.save(session);
 			}
