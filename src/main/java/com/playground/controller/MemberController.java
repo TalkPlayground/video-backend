@@ -20,7 +20,7 @@ public class MemberController {
 	
 	@Autowired MemberService memberService;
 	
-	@PostMapping("/v1/user/login")
+	//@PostMapping("/v1/user/login")
 	public ResponseEntity<Object> login(@RequestBody LoginDTO payload){
 		Object response = memberService.login(payload);
 		if (Objects.nonNull(response)) {
@@ -29,7 +29,7 @@ public class MemberController {
 		return Response.generateResponse(HttpStatus.NOT_ACCEPTABLE, null, "Invalid username or password", false);
 	}
 
-	@PostMapping("/v1/user/register")
+	//@PostMapping("/v1/user/register")
 	public ResponseEntity<Object> signup(@RequestBody @Valid SignupDTO payload){
 		boolean response = memberService.signup(payload);
 		if (response) {

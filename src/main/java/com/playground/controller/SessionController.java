@@ -21,7 +21,7 @@ public class SessionController {
 	
 	@Autowired SessionService sessionService;
 	
-	@PostMapping("/v1/user/email/verify")
+	//@PostMapping("/v1/user/email/verify")
 	public ResponseEntity<Object> verifyEmailViaOTP(@RequestParam String email, @RequestParam String name){
 		boolean response = sessionService.verifyEmail(email, name);
 		if (response) {
@@ -30,7 +30,7 @@ public class SessionController {
 		return Response.generateResponse(HttpStatus.BAD_REQUEST, null, "Failed", false);
 	}
 	
-	@PostMapping("/v1/user/otp/verify")
+	//@PostMapping("/v1/user/otp/verify")
 	public ResponseEntity<Object> verifyOTP(@RequestParam String email, @RequestParam String otp){
 		boolean response = sessionService.verifyOtp(email, otp);
 		if (response) {
