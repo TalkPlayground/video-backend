@@ -169,7 +169,7 @@ public class SessionServiceImpl implements SessionService {
 		} catch (Exception e) {
 			session.setSessionStatus("NOT_FOUND");
 			sessionRepository.save(session);
-			log.error(e.getLocalizedMessage());
+			log.warn(e.getLocalizedMessage());
 			return null;
 		}
 	}
@@ -189,7 +189,7 @@ public class SessionServiceImpl implements SessionService {
 			return Collections.emptyList();
 		} catch (Exception e) {
 			updateSessionIfRecordingInProcess(sessionId);
-			log.error(e.getLocalizedMessage() + " at this sessionId :-  " + sessionId);
+			log.warn(e.getLocalizedMessage() + " at this sessionId :-  " + sessionId);
 			return Collections.emptyList();
 		}
 	}
