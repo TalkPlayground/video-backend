@@ -23,8 +23,7 @@ public class SessionUpdateService {
 	
 	private static final Logger log = LoggerFactory.getLogger(SessionUpdateService.class);
 	
-	//@Scheduled(cron = "1 * * ? * *") //every second
-	@Scheduled(cron = "0 */5 * ? * *") // every five minutes
+	@Scheduled(cron = "0 */10 * ? * *") // every ten minutes
 	@Async
 	public void updateSessionDetails() {
 		try {
