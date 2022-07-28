@@ -29,7 +29,7 @@ public class MemberController {
 		return Response.generateResponse(HttpStatus.NOT_ACCEPTABLE, null, "Invalid username or password", false);
 	}
 
-	//@PostMapping("/v1/user/register")
+	@PostMapping("/v1/user/register")
 	public ResponseEntity<Object> signup(@RequestBody @Valid SignupDTO payload){
 		boolean response = memberService.signup(payload);
 		if (response) {

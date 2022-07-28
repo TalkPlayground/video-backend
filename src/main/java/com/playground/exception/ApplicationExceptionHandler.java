@@ -35,7 +35,7 @@ public class ApplicationExceptionHandler {
 	
 	@ExceptionHandler
 	public ResponseEntity<Object> handleDuplicateKeyException(DuplicateKeyException e, HttpServletRequest request) {
-		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "User has already registered with this email.", false);
+		return Response.generateResponse(HttpStatus.OK, null, "User has already registered with this email.", false);
 	}
 	
 	@ExceptionHandler

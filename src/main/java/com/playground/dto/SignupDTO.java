@@ -23,5 +23,4 @@ public class SignupDTO {
     private String password;
 	@NotNull
     private LocalDate dob;
-    private String inviteCode;
 }
