@@ -160,6 +160,8 @@ public class SessionServiceImpl implements SessionService {
 			ResponseEntity<SessionPayload> data = restTemplate.exchange(url, HttpMethod.GET, entity, SessionPayload.class);
 			if (data.getStatusCodeValue()==200) {
 				session.setHasRecording(data.getBody().isHas_recording());
+				session.setStartTime(data.getBody().getStart_time());
+				session.setEndTime(data.getBody().getEnd_time());
 				session.setSessionStatus("PAST");
 				sessionRepository.save(session);
 			}
@@ -167,7 +169,7 @@ public class SessionServiceImpl implements SessionService {
 		} catch (Exception e) {
 			session.setSessionStatus("NOT_FOUND");
 			sessionRepository.save(session);
-			log.error(e.getLocalizedMessage());
+			log.warn(e.getLocalizedMessage());
 			return null;
 		}
 	}
@@ -186,8 +188,18 @@ public class SessionServiceImpl implements SessionService {
 			}
 			return Collections.emptyList();
 		} catch (Exception e) {
-			log.error(e.getLocalizedMessage() + " at this sessionId :-  " + sessionId);
+			updateSessionIfRecordingInProcess(sessionId);
+			log.warn(e.getLocalizedMessage() + " at this sessionId :-  " + sessionId);
 			return Collections.emptyList();
+		}
+	}
+	
+	public void updateSessionIfRecordingInProcess(String sessionId) {
+		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(sessionId);
+		if (sessionStream.isPresent()) {
+			Session session = sessionStream.get();
+			session.setSessionStatus("LIVE");
+			sessionRepository.save(session);
 		}
 	}
 
@@ -205,7 +217,6 @@ public class SessionServiceImpl implements SessionService {
 			return recordings;
 		}).collect(Collectors.toList());
 		List<Recordings> savedData = recordingRepository.saveAll(mapedData);
-		
 		savedData.parallelStream().forEach(rData->{
 			updateAwsUrlInRecording(rData.getMemberUUID(), rData.getRecordingUUID(), rData.getZoomUrl());
 		});
@@ -268,8 +279,6 @@ public class SessionServiceImpl implements SessionService {
 					recordings.setAwsUrl(awsUrl+fileName);
 					recordingRepository.save(recordings);
 				}
-			}else {
-				log.error("Something wrong in lemda api. : -" + recordingId);
 			}
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());

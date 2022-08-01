@@ -1,6 +1,7 @@
 package com.playground.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,8 +24,7 @@ public class SessionUpdateService {
 	
 	private static final Logger log = LoggerFactory.getLogger(SessionUpdateService.class);
 	
-	//@Scheduled(cron = "1 * * ? * *") //every second
-	@Scheduled(cron = "0 */5 * ? * *") // every five minutes
+	@Scheduled(cron = "0 */10 * ? * *") // every ten minutes
 	@Async
 	public void updateSessionDetails() {
 		try {
@@ -37,7 +37,8 @@ public class SessionUpdateService {
 					};
 				}
 			});
-			log.info("New job has executed at " + LocalDateTime.now());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
+			log.info("New job has executed at " + LocalDateTime.now().format(formatter));
 		} catch (Exception e) {
 			log.error("Issues generated in job execution time - " + e.getLocalizedMessage());
 		}
