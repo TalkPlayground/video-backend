@@ -14,6 +14,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.client.RestTemplate;
 
 import com.playground.domain.OtpSessions;
@@ -49,5 +51,16 @@ public class ApplicationConfig {
 	@Bean
 	public OtpSessions otpSessions() {
 		return new OtpSessions();
+	}
+	
+	@Bean
+	public HttpFirewall getHttpFirewall() {
+	    StrictHttpFirewall strictHttpFirewall = new StrictHttpFirewall();
+	    strictHttpFirewall.setAllowSemicolon(true);
+	    strictHttpFirewall.setAllowBackSlash(true);
+	    strictHttpFirewall.setAllowUrlEncodedDoubleSlash(true);
+	    strictHttpFirewall.setAllowUrlEncodedPercent(true);
+	    strictHttpFirewall.setAllowUrlEncodedSlash(true);
+	    return strictHttpFirewall;
 	}
 }
