@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import dev.fuxing.airtable.AirtableApi;
+import dev.fuxing.airtable.AirtableRecord;
+import dev.fuxing.airtable.AirtableTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -82,12 +85,31 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 			member.setRoles(List.of("ROLE_ANONYMOUS_USER"));
 			member.setCreationDate(LocalDateTime.now());
 			member.setDeleted(false);
-			memberRepository.save(member);
+			Member save = memberRepository.save(member);
+			insertMemberInAirtable(save);
 			return member.getMemberUUID();
 		}
 		return memberStream.get().getMemberUUID();
 	}
 
+	private void insertMemberInAirtable(Member member) {
+
+		try {
+			AirtableApi api = new AirtableApi("keye6pe51CammrRlq");
+			AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("member");
+			AirtableRecord airtableRecord = new AirtableRecord();
+			airtableRecord.putField("id", member.getId());
+			airtableRecord.putField("memberuuid", member.getMemberUUID());
+			airtableRecord.putField("email", member.getEmail());
+			airtableRecord.putField("roles", member.getRoles().get(0));
+			airtableRecord.putField("fullName", member.getFullName());
+			table.post(airtableRecord);
+
+		} catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
+
+		}
+	}
 	public Member loadUserByEmail(String email) throws UsernameNotFoundException {
 		Optional<Member> userStream = memberRepository.findByEmailAndDeleted(email, false);
 		if (userStream.isPresent()) {
