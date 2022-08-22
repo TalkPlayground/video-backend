@@ -45,6 +45,9 @@ import com.playground.repository.RecordingRepository;
 import com.playground.repository.SessionRepository;
 import com.playground.service.MemberService;
 import com.playground.service.SessionService;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
 @Service
 public class SessionServiceImpl implements SessionService {
 	
@@ -56,6 +59,9 @@ public class SessionServiceImpl implements SessionService {
 	@Autowired SessionRepository sessionRepository;
 	@Autowired RecordingRepository recordingRepository;
 	@Autowired ObjectMapper mapper;
+
+	@Autowired
+	private WebClient.Builder webClientBuilder;
 	
 	private static final Logger log = LoggerFactory.getLogger(SessionServiceImpl.class);
 	@Value("${zoom.video-sdk.jwt.token}")
@@ -128,11 +134,14 @@ public class SessionServiceImpl implements SessionService {
 			session.setHasRecording(false);
 			session.setSessionStatus("LIVE");
 			sessionRepository.save(session);
+			webClientBuilder.build().post().uri("localhost:8080/v1/user/session/store/airtable").body(Mono.just(session), Session.class).retrieve().bodyToMono(Object.class).block();
+
 			return true;
 		}else {
 			Session session = sessionStream.get();
 			session.getMemberUUID().add(data.getUserId());
 			sessionRepository.save(session);
+			webClientBuilder.build().post().uri("localhost:8080/v1/user/session/store/airtable").body(Mono.just(session), Session.class).retrieve().bodyToMono(Object.class).block();
 			return true;
 		}
 	}
@@ -278,6 +287,7 @@ public class SessionServiceImpl implements SessionService {
 					Recordings recordings = recordingStream.get();
 					recordings.setAwsUrl(awsUrl+fileName);
 					recordingRepository.save(recordings);
+					webClientBuilder.build().post().uri("localhost:8080/v1/user/session/recording/airtable").body(Mono.just(recordings), Recordings.class).retrieve().bodyToMono(Object.class).block();
 				}
 			}
 		} catch (Exception e) {
