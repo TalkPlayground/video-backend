@@ -8,7 +8,7 @@ RUN apt-get update
 # COPY rds-truststore.jks rds-truststore.jks
 RUN ls && pwd
 
-COPY target/Playground-video-backend-0.0.1-SNAPSHOT.jar /opt/Playground-video-backend.jar
+COPY target/airtableDB-0.0.1-SNAPSHOT.jar /opt/Playground-video-backend.jar
 RUN ls && pwd
 RUN md5sum /opt/Playground-video-backend.jar
 
