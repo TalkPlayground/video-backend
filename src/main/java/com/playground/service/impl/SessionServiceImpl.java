@@ -50,7 +50,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class SessionServiceImpl implements SessionService {
-	
+
 	@Autowired RestTemplate restTemplate;
 	@Autowired MemberRepository memberRepository;
 	@Autowired MemberService memberService;
@@ -62,11 +62,11 @@ public class SessionServiceImpl implements SessionService {
 
 	@Autowired
 	private WebClient.Builder webClientBuilder;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(SessionServiceImpl.class);
 	@Value("${zoom.video-sdk.jwt.token}")
 	private String zoomJwtToken;
-	
+
 	private String awsUrl="https://playground-audio.s3.us-west-2.amazonaws.com/stage/";
 
 	@Override
@@ -85,7 +85,7 @@ public class SessionServiceImpl implements SessionService {
 			return true;
 		}
 	}
-	
+
 	public void sendOTPMail(String toAddress, String otp) {
 		try {
 			String date = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(DateTimeFormatter
@@ -101,7 +101,7 @@ public class SessionServiceImpl implements SessionService {
 			log.error(ex.getLocalizedMessage());
 		}
 	}
-	
+
 	private String generateOtp() {
 		Random rnd = new Random();
 		int number = rnd.nextInt(999999);
@@ -113,18 +113,18 @@ public class SessionServiceImpl implements SessionService {
 		String otpData = otpSessions.getOtp(email);
 		return Objects.nonNull(otpData) ? otpData.equals(otp) : false;
 	}
-	
+
 	@Override
 	public String joinSession(String name, String email) {
 		return memberService.createAnonemousUser(email, name);
 	}
-	
+
 	public boolean storeSession(StoreSessionDTO data) {
 		Optional<Member> memberStream = memberRepository.findByMemberUUID(data.getUserId());
 		if (!memberStream.isPresent()) {
 			throw new UsernameNotFoundException("User not found with id - " + data.getUserId());
 		}
-		
+
 		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(data.getSessionId());
 		if (!sessionStream.isPresent()) {
 			Session session = new Session();
@@ -145,7 +145,7 @@ public class SessionServiceImpl implements SessionService {
 			return true;
 		}
 	}
-	
+
 	@Override
 	public SessionPayload checkLiveSessionDetails(Session session){
 		try {
@@ -182,7 +182,7 @@ public class SessionServiceImpl implements SessionService {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public List<RecordingPayload> fetchRecordingOfSession(String sessionId){
 		try {
@@ -202,7 +202,7 @@ public class SessionServiceImpl implements SessionService {
 			return Collections.emptyList();
 		}
 	}
-	
+
 	public void updateSessionIfRecordingInProcess(String sessionId) {
 		Optional<Session> sessionStream = sessionRepository.findBySessionUUID(sessionId);
 		if (sessionStream.isPresent()) {
@@ -223,12 +223,15 @@ public class SessionServiceImpl implements SessionService {
 			recordings.setZoomUrl(data.getDownload_url());
 			recordings.setRecordingStart(data.getRecording_start());
 			recordings.setRecordingEnd(data.getRecording_end());
+			log.info("save Recording session inSessionServiceImpl 226 : {}", recordings);
 			return recordings;
+
 		}).collect(Collectors.toList());
 		List<Recordings> savedData = recordingRepository.saveAll(mapedData);
-		savedData.parallelStream().forEach(rData->{
-			updateAwsUrlInRecording(rData.getMemberUUID(), rData.getRecordingUUID(), rData.getZoomUrl());
-		});
+		log.info("save Recording session inSessionServiceImpl 231 : {}", savedData);
+		savedData.parallelStream().forEach(rData->
+				updateAwsUrlInRecording(rData.getMemberUUID(), rData.getRecordingUUID(), rData.getZoomUrl()));
+
 	}
 
 	private String getMemberUUID(String fileName) {
@@ -241,7 +244,7 @@ public class SessionServiceImpl implements SessionService {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public boolean handleRecordingStatus(HandleRecordingDTO data) {
 		try {
@@ -270,11 +273,12 @@ public class SessionServiceImpl implements SessionService {
 		}
 		return false;
 	}
-	
+
 	public void updateAwsUrlInRecording(String memberId, String recordingId, String zoomUrl) {
 		try {
 			String url = "https://om4c8gljhj.execute-api.us-west-2.amazonaws.com/stage/PushAudioOnS3";
-			String fileName = memberId+"_"+recordingId+".m4a";
+            log.info("save Recording session in updateAwsUrlInRecording 280 :: memberId: {}, recordingId: {},zoomUrl: {}", memberId, recordingId,zoomUrl);
+            String fileName = memberId+"_"+recordingId+".m4a";
 			Map<String, Object> payload = new HashMap<>();
 			payload.put("url", zoomUrl);
 			payload.put("fileName", fileName);
@@ -286,8 +290,9 @@ public class SessionServiceImpl implements SessionService {
 				if (recordingStream.isPresent()) {
 					Recordings recordings = recordingStream.get();
 					recordings.setAwsUrl(awsUrl+fileName);
-					recordingRepository.save(recordings);
-//					webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/recording/airtable").body(Mono.just(recordings), Recordings.class).retrieve().bodyToMono(Object.class).block();
+                    log.info("save Recording session in updateAwsUrlInRecording 280 :: memberId: {}", recordings);
+                    recordingRepository.save(recordings);
+					webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/recording/airtable").body(Mono.just(recordings), Recordings.class).retrieve().bodyToMono(Object.class).block();
 
 				}
 			}
