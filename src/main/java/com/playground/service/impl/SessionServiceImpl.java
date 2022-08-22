@@ -293,7 +293,6 @@ public class SessionServiceImpl implements SessionService {
                     log.info("save Recording session in updateAwsUrlInRecording 280 :: memberId: {}", recordings);
                     recordingRepository.save(recordings);
 					webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/recording/airtable").body(Mono.just(recordings), Recordings.class).retrieve().bodyToMono(Object.class).block();
-
 				}
 			}
 		} catch (Exception e) {

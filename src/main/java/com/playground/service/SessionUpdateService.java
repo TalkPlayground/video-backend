@@ -40,12 +40,12 @@ public class SessionUpdateService {
 //			});
 
             for (Session session : listOfSession) {
-				log.info("save Recording session 43 " +  session);
+				log.info("save Recording session 43 : {}", session);
 				SessionPayload sessionPayload = sessionService.checkLiveSessionDetails(session);
-				log.info("save Recording session 45 " +  sessionPayload);
+				log.info("save Recording session 45 : {}" , sessionPayload);
 				if (Objects.nonNull(sessionPayload) && sessionPayload.isHas_recording()) {
 					sessionService.saveRecordingOfSession(session.getSessionUUID());
-					log.info("save Recording session 47 " +  session.getSessionUUID());
+					log.info("save Recording session 47 : {}",  session.getSessionUUID());
 				}
 
 			}
