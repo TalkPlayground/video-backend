@@ -86,7 +86,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
             member.setCreationDate(LocalDateTime.now());
             member.setDeleted(false);
             memberRepository.save(member);
-            webClientBuilder.build().post().uri("localhost:8080/v1/user/session/airtable").body(Mono.just(member), Member.class).retrieve().bodyToMono(Object.class).block();
+            webClientBuilder.build().post().uri("localhost:8082/v1/user/session/airtable").body(Mono.just(member), Member.class).retrieve().bodyToMono(Object.class).block();
             return member.getMemberUUID();
         }
         return memberStream.get().getMemberUUID();
