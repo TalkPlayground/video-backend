@@ -226,6 +226,7 @@ public class SessionServiceImpl implements SessionService {
 			return recordings;
 		}).collect(Collectors.toList());
 		List<Recordings> savedData = recordingRepository.saveAll(mapedData);
+		webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/recording/airtable").body(Mono.just(savedData), Recordings.class).retrieve().bodyToMono(Object.class).block();
 		savedData.parallelStream().forEach(rData->{
 			updateAwsUrlInRecording(rData.getMemberUUID(), rData.getRecordingUUID(), rData.getZoomUrl());
 		});
@@ -287,7 +288,6 @@ public class SessionServiceImpl implements SessionService {
 					Recordings recordings = recordingStream.get();
 					recordings.setAwsUrl(awsUrl+fileName);
 					recordingRepository.save(recordings);
-					webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/recording/airtable").body(Mono.just(recordings), Recordings.class).retrieve().bodyToMono(Object.class).block();
 				}
 			}
 		} catch (Exception e) {
