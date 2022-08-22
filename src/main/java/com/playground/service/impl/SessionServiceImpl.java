@@ -287,7 +287,7 @@ public class SessionServiceImpl implements SessionService {
 					Recordings recordings = recordingStream.get();
 					recordings.setAwsUrl(awsUrl+fileName);
 					recordingRepository.save(recordings);
-					webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/recording/airtable").body(Mono.just(recordings), Recordings.class).retrieve().bodyToMono(Object.class).block();
+//					webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/recording/airtable").body(Mono.just(recordings), Recordings.class).retrieve().bodyToMono(Object.class).block();
 
 				}
 			}
