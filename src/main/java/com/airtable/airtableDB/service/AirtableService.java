@@ -46,6 +46,8 @@ public class AirtableService {
             airtableRecord.putField("sessionuuid", session.getSessionUUID());
             airtableRecord.putField("sessionStatus", session.getSessionStatus());
             airtableRecord.putField("creatoruuid", session.getCreatorUUID());
+            String startTime = session.getStartTime();
+            String endTime = session.getEndTime();
             airtableRecord.putField("endTime", session.getEndTime() != null ? session.getEndTime() : "null");
             airtableRecord.putField("startTime", session.getStartTime() != null ? session.getStartTime(): "null");
             table.post(airtableRecord);
@@ -69,7 +71,7 @@ public class AirtableService {
             airtableRecord.putField("zoomUrl", recordings.getZoomUrl());
             airtableRecord.putField("recordingStart", recordings.getRecordingStart());
             airtableRecord.putField("recordingEnd", recordings.getRecordingEnd());
-            airtableRecord.putField("awsURL", recordings.getAwsUrl());
+            airtableRecord.putField("awsUrl", recordings.getAwsUrl());
             table.post(airtableRecord);
 
         } catch (Exception e) {
