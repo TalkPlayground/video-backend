@@ -65,7 +65,7 @@ public class AirtableService {
             airtableRecord.putField("id", recordings.getId());
             airtableRecord.putField("recordingUUID", recordings.getRecordingUUID());
             airtableRecord.putField("sessionUUID", recordings.getSessionUUID());
-//            airtableRecord.putField("memberUUID", recordings.getMemberUUID());
+            airtableRecord.putField("memberUUID", recordings.getMemberUUID());
             airtableRecord.putField("zoomUrl", recordings.getZoomUrl());
             airtableRecord.putField("recordingStart", recordings.getRecordingStart());
             airtableRecord.putField("recordingEnd", recordings.getRecordingEnd());
