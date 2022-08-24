@@ -170,13 +170,11 @@ public class SessionServiceImpl implements SessionService {
                 session.setEndTime(data.getBody().getEnd_time());
                 session.setSessionStatus("PAST");
                 sessionRepository.save(session);
-                webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/store/airtable").body(Mono.just(session), Session.class).retrieve().bodyToMono(Object.class).block();
             }
             return data.getStatusCodeValue() == 200 ? data.getBody() : null;
         } catch (Exception e) {
             session.setSessionStatus("NOT_FOUND");
             sessionRepository.save(session);
-            webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/session/store/airtable").body(Mono.just(session), Session.class).retrieve().bodyToMono(Object.class).block();
             log.warn(e.getLocalizedMessage());
             return null;
         }
