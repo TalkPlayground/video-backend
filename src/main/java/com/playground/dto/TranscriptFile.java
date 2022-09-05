@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class TranscriptFile {
-	private String memberUUID;
-	private String transcriptFileUrl;
+    private String memberUUID;
+    private String transcriptFileUrl;
 }

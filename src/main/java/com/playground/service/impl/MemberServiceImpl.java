@@ -73,7 +73,6 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         return UUID.randomUUID().toString().replaceAll("[-+.^:,]", "").substring(0, 14);
     }
 
-
     @Override
     public String createAnonemousUser(String email, String name) {
         Optional<Member> memberStream = memberRepository.findByEmail(email);

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class RecordingPayload {
-	public String id;
+    public String id;
     public String recording_start;
     public String recording_end;
     public String file_name;

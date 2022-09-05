@@ -48,6 +48,7 @@ public class PlaygroundVideoBackendApplication {
             }
         }
     }
+
     @Bean
     public WebClient.Builder getWebClientBuilder() {
         return WebClient.builder();

@@ -62,7 +62,6 @@ public class SessionServiceImpl implements SessionService {
     private static final Logger log = LoggerFactory.getLogger(SessionServiceImpl.class);
     @Value("${zoom.video-sdk.jwt.token}")
     private String zoomJwtToken;
-
     private String awsUrl = "https://playground-audio.s3.us-west-2.amazonaws.com/stage/";
 
     @Override

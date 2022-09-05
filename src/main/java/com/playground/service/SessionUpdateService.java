@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,31 +29,19 @@ public class SessionUpdateService {
     public void updateSessionDetails() {
         try {
             List<Session> listOfSession = sessionRepository.findAllBySessionStatus("LIVE");
-//			listOfSession.parallelStream().forEach(data-> {
-//				SessionPayload sessionDetails = sessionService.checkLiveSessionDetails(data);
-//				if (Objects.nonNull(sessionDetails)) {
-//					if (sessionDetails.isHas_recording()) {
-//						sessionService.saveRecordingOfSession(data.getSessionUUID());
-//					}session
-//				}
-//			});
-
             for (Session session : listOfSession) {
-				log.info("save Recording session 43 : {}", session);
-				SessionPayload sessionPayload = sessionService.checkLiveSessionDetails(session);
-				log.info("save Recording session 45 : {}" , sessionPayload);
-				if (Objects.nonNull(sessionPayload) && sessionPayload.isHas_recording()) {
-					sessionService.saveRecordingOfSession(session.getSessionUUID());
-					log.info("save Recording session 47 : {}",  session.getSessionUUID());
-				}
-
-			}
-
+                log.info("save Recording session 43 : {}", session);
+                SessionPayload sessionPayload = sessionService.checkLiveSessionDetails(session);
+                log.info("save Recording session 45 : {}", sessionPayload);
+                if (Objects.nonNull(sessionPayload) && sessionPayload.isHas_recording()) {
+                    sessionService.saveRecordingOfSession(session.getSessionUUID());
+                    log.info("save Recording session 47 : {}", session.getSessionUUID());
+                }
+            }
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
             log.info("New job has executed at " + LocalDateTime.now().format(formatter));
         } catch (Exception e) {
             log.error("Issues generated in job execution time - " + e.getLocalizedMessage());
         }
     }
-
 }

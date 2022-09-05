@@ -1,16 +1,17 @@
 package com.playground.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.playground.domain.Session;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.playground.domain.Session;
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface SessionRepository extends MongoRepository<Session, String> {
 
-	Optional<Session> findBySessionUUID(String sessionId);
-	List<Session> findAllBySessionStatus(String status);
+    Optional<Session> findBySessionUUID(String sessionId);
+
+    List<Session> findAllBySessionStatus(String status);
 
 }
