@@ -25,12 +25,15 @@ public class PlaygroundVideoBackendApplication {
     protected static class SSLContextHelper {
         private static final Logger logger = LoggerFactory.getLogger(PlaygroundVideoBackendApplication.class);
         private static final String SSL_TRUST_STORE = "javax.net.ssl.trustStore";
-        private static final String SSL_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+        private static final String SSL_TRUST_STORE_PASWORD = "javax.net.ssl.trustStorePassword";
         private static final String SSL_TRUST_STORE_TYPE = "javax.net.ssl.trustStoreType";
         private static final String KEY_STORE_TYPE = "JKS";
-        private static final String DEFAULT_KEY_STORE_PASSWORD = "playground";
+        private static final String DEFAULT_KEY_STORE_PASWORD = "playground";
         private static final String DEFAULT_KEYSTORE = "rds-truststore.jks";
         private static final String SSL_KEYSTORE = "sslKeyStore";
+
+        public SSLContextHelper() {
+        }
 
         private static void setSslProperties() {
             try {
@@ -42,9 +45,9 @@ public class PlaygroundVideoBackendApplication {
                 logger.info("ssl keystore path: {}", sslKeyStore);
                 System.setProperty(SSL_TRUST_STORE, sslKeyStore);
                 System.setProperty(SSL_TRUST_STORE_TYPE, KEY_STORE_TYPE);
-                System.setProperty(SSL_TRUST_STORE_PASSWORD, DEFAULT_KEY_STORE_PASSWORD);
+                System.setProperty(SSL_TRUST_STORE_PASWORD, DEFAULT_KEY_STORE_PASWORD);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Exection failed",e);
             }
         }
     }

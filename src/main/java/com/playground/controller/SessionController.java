@@ -18,23 +18,25 @@ import com.playground.utils.Response;
 
 @RestController
 public class SessionController {
-	
+
+	public static final String SUCCESS = "Success";
+	public static final String FAILED = "Failed";
 	@Autowired SessionService sessionService;
 	
 	//@PostMapping("/v1/user/email/verify")
 	public ResponseEntity<Object> verifyEmailViaOTP(@RequestParam String email, @RequestParam String name){
 		boolean response = sessionService.verifyEmail(email, name);
 		if (response) {
-			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
 		}
-		return Response.generateResponse(HttpStatus.BAD_REQUEST, null, "Failed", false);
+		return Response.generateResponse(HttpStatus.BAD_REQUEST, null, FAILED, false);
 	}
 	
 	//@PostMapping("/v1/user/otp/verify")
 	public ResponseEntity<Object> verifyOTP(@RequestParam String email, @RequestParam String otp){
 		boolean response = sessionService.verifyOtp(email, otp);
 		if (response) {
-			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
 		}
 		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Invalid OTP.", false);
 	}
@@ -43,36 +45,44 @@ public class SessionController {
 	public ResponseEntity<Object> joinSession(@RequestParam String name, @RequestParam String email){
 		String response = sessionService.joinSession(name, email);
 		if (Objects.nonNull(response)) {
-			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
 		}
-		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
 	}	
 	
 	@PostMapping("/v1/user/session/store")
 	public ResponseEntity<Object> storeSession(@RequestBody StoreSessionDTO data){
 		boolean response = sessionService.storeSession(data);
 		if (response) {
-			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
 		}
-		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
 	}	
 	
 	@PostMapping("/v1/user/session/recording")
 	public ResponseEntity<Object> handleZoomSdkRecording(@RequestBody HandleRecordingDTO data){
 		boolean response = sessionService.handleRecordingStatus(data);
 		if (response) {
-			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
 		}
-		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
 	}	
 	
 	@PostMapping("/v1/user/session/transcript/files")
 	public ResponseEntity<Object> insertTranscriptFiles(@RequestBody SessionTranscriptFile  data){
 		boolean response = sessionService.insertTranscriptFiles(data);
 		if (response) {
-			return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
 		}
-		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
-	}	
-	
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
+	}
+
+//	@PostMapping("/v1/user/session/frontend/loggers")
+//	public ResponseEntity<Object> insertTranscriptFiles(@RequestBody String logs){
+//		String response = sessionService.getlogs(logs);
+//		if (response != null) {
+//			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
+//		}
+//		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
+//	}
 }

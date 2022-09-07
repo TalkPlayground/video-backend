@@ -106,7 +106,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public boolean verifyOtp(String email, String otp) {
         String otpData = otpSessions.getOtp(email);
-        return Objects.nonNull(otpData) ? otpData.equals(otp) : false;
+        return Objects.nonNull(otpData) && otpData.equals(otp);
     }
 
     @Override
@@ -296,4 +296,10 @@ public class SessionServiceImpl implements SessionService {
             log.error(e.getLocalizedMessage());
         }
     }
+
+//    public String getlogs(String logs) {
+//        log.info("This is frontend logging  logs: {}", logs );
+//        return logs;
+//    }
+
 }
