@@ -78,7 +78,7 @@ public class SessionController {
 	}
 
 	@PostMapping("/v1/user/session/frontend/loggers")
-	public ResponseEntity<Object> insertTranscriptFiles(@RequestBody String logs){
+	public ResponseEntity<Object> insertTranscriptFiles(@RequestParam String logs){
 		String response = sessionService.getlogs(logs);
 		if (response != null) {
 			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
