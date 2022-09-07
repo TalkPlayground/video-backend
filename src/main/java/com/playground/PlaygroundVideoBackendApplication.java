@@ -32,7 +32,7 @@ public class PlaygroundVideoBackendApplication {
         private static final String DEFAULT_KEYSTORE = "rds-truststore.jks";
         private static final String SSL_KEYSTORE = "sslKeyStore";
 
-        public SSLContextHelper() {
+        private SSLContextHelper() {
         }
 
         private static void setSslProperties() {
