@@ -297,9 +297,9 @@ public class SessionServiceImpl implements SessionService {
         }
     }
 
-//    public String getlogs(String logs) {
-//        log.info("This is frontend logging  logs: {}", logs );
-//        return logs;
-//    }
+    public String getlogs(String logs) {
+        log.info("This is frontend logs: {}", logs );
+        return logs;
+    }
 
 }

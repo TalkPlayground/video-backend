@@ -21,6 +21,6 @@ public interface SessionService {
 	SessionPayload checkPastSessionDetails(Session session);
 	boolean storeSession(StoreSessionDTO data);
 
-//	String getlogs(String logs);
+	String getlogs(String logs);
 
 }

@@ -77,12 +77,12 @@ public class SessionController {
 		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
 	}
 
-//	@PostMapping("/v1/user/session/frontend/loggers")
-//	public ResponseEntity<Object> insertTranscriptFiles(@RequestBody String logs){
-//		String response = sessionService.getlogs(logs);
-//		if (response != null) {
-//			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
-//		}
-//		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
-//	}
+	@PostMapping("/v1/user/session/frontend/loggers")
+	public ResponseEntity<Object> insertTranscriptFiles(@RequestBody String logs){
+		String response = sessionService.getlogs(logs);
+		if (response != null) {
+			return Response.generateResponse(HttpStatus.OK, response, SUCCESS, true);
+		}
+		return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, FAILED, false);
+	}
 }
