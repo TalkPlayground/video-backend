@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class StoreSessionDTO {
-	private String userId;
-	private String sessionId;
+    private String userId;
+    private String sessionId;
 }

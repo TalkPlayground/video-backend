@@ -1,14 +1,14 @@
 package com.playground.repository;
 
-import java.util.Optional;
-
+import com.playground.domain.Recordings;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.playground.domain.Recordings;
+import java.util.Optional;
+
 @Repository
 public interface RecordingRepository extends MongoRepository<Recordings, String> {
 
-	Optional<Recordings> findByRecordingUUID(String recordingId);
+    Optional<Recordings> findByRecordingUUID(String recordingId);
 
 }

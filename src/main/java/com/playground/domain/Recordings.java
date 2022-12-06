@@ -1,14 +1,9 @@
 package com.playground.domain;
 
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
@@ -17,14 +12,14 @@ import lombok.ToString;
 @ToString
 @Document
 public class Recordings {
-	@Id
-	private String id;
-	@Indexed(unique = true)	
-	private String recordingUUID;
-	private String sessionUUID;
-	private String memberUUID;
-	private String zoomUrl;
-	private String awsUrl;
-	private String recordingStart;
-	private String recordingEnd;
+    @Id
+    private String id;
+    @Indexed(unique = true)
+    private String recordingUUID;
+    private String sessionUUID;
+    private String memberUUID;
+    private String zoomUrl;
+    private String awsUrl;
+    private String recordingStart;
+    private String recordingEnd;
 }

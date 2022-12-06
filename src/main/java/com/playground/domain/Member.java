@@ -1,18 +1,13 @@
 package com.playground.domain;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +16,7 @@ import lombok.ToString;
 @ToString
 @Document
 public class Member {
-    
+
     @Id
     private String id;
     @Indexed(unique = true)
@@ -35,13 +30,13 @@ public class Member {
     private String password;
     private LocalDateTime creationDate;
     private boolean deleted;
-    
-	public Member(String memberUUID, String fullName, String email, List<String> roles) {
-		this.memberUUID = memberUUID;
-		this.fullName = fullName;
-		this.email = email;
-		this.roles = roles;
-	}
-    
-    
+
+    public Member(String memberUUID, String fullName, String email, List<String> roles) {
+        this.memberUUID = memberUUID;
+        this.fullName = fullName;
+        this.email = email;
+        this.roles = roles;
+    }
+
+
 }

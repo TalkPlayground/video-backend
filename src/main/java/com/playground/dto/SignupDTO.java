@@ -1,26 +1,27 @@
 package com.playground.dto;
 
-import java.time.LocalDate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class SignupDTO {
-	@NotEmpty @NotBlank
+    @NotEmpty
+    @NotBlank
     private String fullName;
-	@Email
+    @Email
     private String email;
-	@NotEmpty @NotBlank
+    @NotEmpty
+    @NotBlank
     private String password;
-	@NotNull
+    @NotNull
     private LocalDate dob;
 }
