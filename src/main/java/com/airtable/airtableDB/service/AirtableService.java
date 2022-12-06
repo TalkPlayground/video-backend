@@ -1,6 +1,6 @@
 package com.airtable.airtableDB.service;
 
-
+import com.airtable.airtableDB.dto.StatusChangeTrascriptDTO;
 import com.airtable.airtableDB.entity.Member;
 import com.airtable.airtableDB.entity.Recordings;
 import com.airtable.airtableDB.entity.Session;
@@ -9,6 +9,8 @@ import dev.fuxing.airtable.AirtableRecord;
 import dev.fuxing.airtable.AirtableTable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 
 @Slf4j
@@ -49,11 +51,11 @@ public class AirtableService {
             String startTime = session.getStartTime();
             String endTime = session.getEndTime();
             airtableRecord.putField("endTime", session.getEndTime() != null ? session.getEndTime() : "null");
-            airtableRecord.putField("startTime", session.getStartTime() != null ? session.getStartTime(): "null");
+            airtableRecord.putField("startTime", session.getStartTime() != null ? session.getStartTime() : "null");
             table.post(airtableRecord);
 
         } catch (Exception e) {
-            log.error(e.getLocalizedMessage() );
+            log.error(e.getLocalizedMessage());
         }
         return true;
     }
@@ -79,5 +81,19 @@ public class AirtableService {
 
         }
         return true;
+    }
+
+    public Boolean updateStatusInAirtable(StatusChangeTrascriptDTO status) {
+         if (!status.getStatus()){
+            AirtableApi api = new AirtableApi("keye6pe51CammrRlq");
+            AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("Transcripts");
+            AirtableRecord airtableRecord = new AirtableRecord();
+            airtableRecord.putField("Delete?", "DELETE");
+            table.post(airtableRecord);
+            return  true;
+            }
+            else {
+                return false;
+            }
     }
 }

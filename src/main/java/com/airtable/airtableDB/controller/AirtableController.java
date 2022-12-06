@@ -1,5 +1,6 @@
 package com.airtable.airtableDB.controller;
 
+import com.airtable.airtableDB.dto.StatusChangeTrascriptDTO;
 import com.airtable.airtableDB.entity.Member;
 import com.airtable.airtableDB.entity.Recordings;
 import com.airtable.airtableDB.entity.Session;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -47,4 +49,18 @@ public class AirtableController {
         }
         return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
     }
+
+    @PostMapping("/v1/user/transcripts/status/airtable")
+    public ResponseEntity<Object> updateDeleteStatusInAirtable(@RequestBody StatusChangeTrascriptDTO status) {
+        try {
+            boolean response = airtableService.updateStatusInAirtable(status);
+            if (response) {
+                return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+            }
+            return Response.generateResponse(HttpStatus.OK, response, "Status Not Changed", false);
+        } catch (Exception e) {
+            return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+        }
+    }
+
 }
