@@ -6,4 +6,8 @@ import lombok.Data;
 public class StatusChangeTrascriptDTO {
 
     private Boolean status;
+
+    private String userId;
+
+    private String sessionId;
 }

@@ -86,8 +86,10 @@ public class AirtableService {
     public Boolean updateStatusInAirtable(StatusChangeTrascriptDTO status) {
          if (!status.getStatus()){
             AirtableApi api = new AirtableApi("keye6pe51CammrRlq");
-            AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("Transcripts");
+            AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("Transcripts Delete");
             AirtableRecord airtableRecord = new AirtableRecord();
+            airtableRecord.putField("memberUUID",status.getUserId());
+            airtableRecord.putField("sessionuuid",status.getSessionId());
             airtableRecord.putField("Delete?", "DELETE");
             table.post(airtableRecord);
             return  true;
