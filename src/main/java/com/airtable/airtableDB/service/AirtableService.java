@@ -1,5 +1,6 @@
 package com.airtable.airtableDB.service;
 
+import com.airtable.airtableDB.dto.ErrorLogsDTO;
 import com.airtable.airtableDB.dto.StatusChangeTrascriptDTO;
 import com.airtable.airtableDB.entity.Member;
 import com.airtable.airtableDB.entity.Recordings;
@@ -97,5 +98,26 @@ public class AirtableService {
             else {
                 return false;
             }
+    }
+
+    public Boolean errorLogsAirtableCL(ErrorLogsDTO status) {
+        try{
+            AirtableApi api = new AirtableApi("keymdmDK7VeHW6N6q");
+            AirtableTable table = api.base("appNnssyjFDqcoSKd").table("Error Logs");
+            AirtableRecord airtableRecord = new AirtableRecord();
+            airtableRecord.putField("SessionID",status.getSessionId());
+            airtableRecord.putField("UserID",status.getUserId());
+            airtableRecord.putField("TimeStamp",status.getTimeStamp());
+            airtableRecord.putField("Console Error Message",status.getConsoleErrorMessage());
+            airtableRecord.putField("Browser details",status.getBrowserDetails());
+            airtableRecord.putField("Computer OS",status.getComputerOS());
+            airtableRecord.putField("Browser version",status.getBrowserVersion());
+            airtableRecord.putField("Section Bug",status.getSectionBug());
+            table.post(airtableRecord);
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage());
+
+        }
+        return true;
     }
 }

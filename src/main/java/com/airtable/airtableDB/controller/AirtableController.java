@@ -1,5 +1,6 @@
 package com.airtable.airtableDB.controller;
 
+import com.airtable.airtableDB.dto.ErrorLogsDTO;
 import com.airtable.airtableDB.dto.StatusChangeTrascriptDTO;
 import com.airtable.airtableDB.entity.Member;
 import com.airtable.airtableDB.entity.Recordings;
@@ -54,6 +55,19 @@ public class AirtableController {
     public ResponseEntity<Object> updateDeleteStatusInAirtable(@RequestBody StatusChangeTrascriptDTO status) {
         try {
             boolean response = airtableService.updateStatusInAirtable(status);
+            if (response) {
+                return Response.generateResponse(HttpStatus.OK, response, "Success", true);
+            }
+            return Response.generateResponse(HttpStatus.OK, response, "Status Not Changed", false);
+        } catch (Exception e) {
+            return Response.generateResponse(HttpStatus.EXPECTATION_FAILED, null, "Failed", false);
+        }
+    }
+
+    @PostMapping("/v1/user/airtableCL/errorLogs")
+    public ResponseEntity<Object> errorLogsAirtableCL(@RequestBody ErrorLogsDTO status) {
+        try {
+            boolean response = airtableService.errorLogsAirtableCL(status);
             if (response) {
                 return Response.generateResponse(HttpStatus.OK, response, "Success", true);
             }
