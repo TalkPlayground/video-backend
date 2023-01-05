@@ -106,7 +106,7 @@ public class SessionController {
     @PostMapping("/v1/user/airtableCL/errorLog")
     public ResponseEntity<Object> errorLogsAirtableCL(@RequestBody ErrorLogsDTO status) {
         try {
-            Object response = webClientBuilder.build().post().uri("localhost:8082/v1/user/airtableCL/errorLogs").body(Mono.just(status), ErrorLogsDTO.class).retrieve().bodyToMono(Object.class).block();
+            Object response = webClientBuilder.build().post().uri("http://52.42.41.198:8082/v1/user/airtableCL/errorLogs").body(Mono.just(status), ErrorLogsDTO.class).retrieve().bodyToMono(Object.class).block();
             if (response != null) {
                 return Response.generateResponse(HttpStatus.OK, response, "Success", true);
             }
