@@ -23,7 +23,7 @@ public class AirtableService {
 
         try {
 
-            AirtableApi api = new AirtableApi("keye6pe51CammrRlq");
+            AirtableApi api = new AirtableApi("patgTxSs4C88HaCiD.b6834d8eb8361847c11b57cda37091a0f06eb9da8423c7ec4797a410836bbf9d");
             AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("member");
             AirtableRecord airtableRecord = new AirtableRecord();
             airtableRecord.putField("id", member.getId());
@@ -42,7 +42,7 @@ public class AirtableService {
     public boolean insertSessionInAirtable(Session session) {
 
         try {
-            AirtableApi api = new AirtableApi("keye6pe51CammrRlq");
+            AirtableApi api = new AirtableApi("patgTxSs4C88HaCiD.b6834d8eb8361847c11b57cda37091a0f06eb9da8423c7ec4797a410836bbf9d");
             AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("session");
             AirtableRecord airtableRecord = new AirtableRecord();
             airtableRecord.putField("id", session.getId());
@@ -64,7 +64,7 @@ public class AirtableService {
     public boolean insertRecordingInAirtable(Recordings recordings) {
 
         try {
-            AirtableApi api = new AirtableApi("keye6pe51CammrRlq");
+            AirtableApi api = new AirtableApi("patgTxSs4C88HaCiD.b6834d8eb8361847c11b57cda37091a0f06eb9da8423c7ec4797a410836bbf9d");
             AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("recordings");
             AirtableRecord airtableRecord = new AirtableRecord();
             airtableRecord.putField("id", recordings.getId());
@@ -86,7 +86,7 @@ public class AirtableService {
 
     public Boolean updateStatusInAirtable(StatusChangeTrascriptDTO status) {
          if (!status.getStatus()){
-            AirtableApi api = new AirtableApi("keye6pe51CammrRlq");
+            AirtableApi api = new AirtableApi("patgTxSs4C88HaCiD.b6834d8eb8361847c11b57cda37091a0f06eb9da8423c7ec4797a410836bbf9d");
             AirtableTable table = api.base("appdcO4ssd2E4iSbM").table("Transcripts Delete");
             AirtableRecord airtableRecord = new AirtableRecord();
             airtableRecord.putField("memberUUID",status.getUserId());
@@ -102,7 +102,7 @@ public class AirtableService {
 
     public Boolean errorLogsAirtableCL(ErrorLogsDTO status) {
         try{
-            AirtableApi api = new AirtableApi("keymdmDK7VeHW6N6q");
+            AirtableApi api = new AirtableApi("patgTxSs4C88HaCiD.b6834d8eb8361847c11b57cda37091a0f06eb9da8423c7ec4797a410836bbf9d");
             AirtableTable table = api.base("appNnssyjFDqcoSKd").table("Error Logs");
             AirtableRecord airtableRecord = new AirtableRecord();
             airtableRecord.putField("SessionID",status.getSessionId());
